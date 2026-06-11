@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hey Lisa... ❤️</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Pacifico&family=Outfit:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,600;1,400&display=swap"
+    rel="stylesheet">
+
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="style.css?v=romantic_v9">
+</head>
+
+<body>
+
+  <!-- Background Animated Canvases -->
+  <canvas id="bg-canvas"></canvas>
+  <canvas id="trail-canvas"></canvas>
+
+  <!-- Background music element -->
+  <audio id="bg-music" loop>
+    <source src="assets/music.mp3" type="audio/mpeg">
+    <source src="assets/music.m4a" type="audio/mp4">
+    <source src="assets/music.webm" type="audio/webm">
+  </audio>
+
+  <!-- Glassmorphic Floating Music Player Widget -->
+  <div id="music-player-widget" class="music-player-card" style="display: none;">
+    <div class="player-album-art">
+      <span class="player-heart-icon">🐱</span>
+    </div>
+    <div class="player-info">
+      <div class="player-track-title">Scuba Cat Dancing</div>
+      <div class="player-track-status">Playing</div>
+    </div>
+    <div class="player-visualizer">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </div>
+    <button id="music-toggle" class="player-btn" aria-label="Toggle music">
+      <svg class="icon-mute" viewBox="0 0 24 24" width="20" height="20">
+        <path fill="currentColor"
+          d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM12 4L9.91 6.09L12 8.18V4zm-6.41.87L4.12 6.34L7.78 10H3v4h3l5 5v-6.78l4.31 4.31c-.57.44-1.21.78-1.92.97v2.02c1.25-.26 2.39-.88 3.32-1.72l2.36 2.36l1.41-1.41L5.59 4.87zM12 15.82L9.18 13H12v2.82z" />
+      </svg>
+      <svg class="icon-unmute" viewBox="0 0 24 24" width="20" height="20" style="display: none;">
+        <path fill="currentColor"
+          d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- LOADING SCREEN -->
+  <div id="loader" class="screen active-screen">
+    <div class="loader-content">
+      <div class="heart-container">
+        <div class="beating-heart">❤️</div>
+      </div>
+      <p class="loader-text">Preparing something special for you... ❤️</p>
+    </div>
+  </div>
+
+  <!-- SCREEN 1: LANDING SCREEN (LOVE LETTER ENVELOPE) -->
+  <div id="screen-landing" class="screen">
+    <div class="envelope-wrapper">
+      <div class="envelope" id="envelope-element">
+        <div class="envelope-back-side"></div>
+        <div class="envelope-paper" id="envelope-paper-element">
+          <h1 class="heading cursive-text pop-text">Hey Lisa... ❤️</h1>
+          <p class="subheading">I have something important to ask you...</p>
+          <button id="btn-continue" class="btn btn-glow">Continue ➔</button>
+        </div>
+        <div class="envelope-front-side"></div>
+        <div class="envelope-top-flap" id="envelope-top-flap"></div>
+        <div class="envelope-seal" id="envelope-seal-element">❤️</div>
+      </div>
+      <p class="envelope-hint">Click the heart seal to open your letter... 💌</p>
+    </div>
+  </div>
+
+  <!-- SCREEN 2: PROPOSAL SCREEN -->
+  <div id="screen-proposal" class="screen">
+    <div class="glass-card proposal-card" id="proposal-card-element">
+      <div class="card-decor">✨💖✨</div>
+      <h2 class="question-text">Will you be my girlfriend? 💍❤️</h2>
+
+      <!-- Interactive buttons wrapper -->
+      <div class="proposal-buttons">
+        <button id="btn-yes" class="btn btn-yes-glow">YES 💖</button>
+        <button id="btn-no" class="btn btn-no-danger">NO 😢</button>
+      </div>
+
+      <!-- Funny overlay reactions container -->
+      <div id="funny-overlay" class="funny-overlay-text"></div>
+    </div>
+  </div>
+
+  <!-- SCREEN 3: SUCCESS SCREEN -->
+  <div id="screen-success" class="screen">
+    <div class="success-scroll-container">
+
+      <!-- Top banner card -->
+      <div class="glass-card success-hero-card">
+        <h1 class="success-title pop-text">YAYYYYY ❤️</h1>
+        <p class="success-subtitle">You just made me the happiest person alive 🥹</p>
+        <p class="success-annoy">I promise to annoy you forever ❤️</p>
+      </div>
+
+      <!-- Dancing Cat Card -->
+      <div class="glass-card cat-card text-center" style="max-width: 400px; width: 100%; padding: 25px;">
+        <h3 style="font-family: var(--font-title); font-size: 1.4rem; color: var(--dark-pink); margin-bottom: 12px;">Official Victory Dance! 🐱💃</h3>
+        <div class="cat-canvas-wrapper" style="position: relative; border-radius: 16px; overflow: hidden; background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border); aspect-ratio: 16/9; display: flex; justify-content: center; align-items: center;">
+          <canvas id="cat-canvas" width="320" height="180" style="width: 100%; height: auto; display: block;"></canvas>
+          <video id="cat-video" src="assets/cat_dance.mp4" loop muted playsinline style="display: none;"></video>
+        </div>
+      </div>
+
+      <!-- Love Story Counter -->
+      <div class="counter-section">
+        <div class="glass-card counter-card">
+          <h2 class="section-title">Time We've Known Each Other</h2>
+          <div class="love-counter" id="love-counter-display">
+            <div class="counter-item"><span class="digits" id="count-days">00</span><span class="label">Days</span>
+            </div>
+            <div class="counter-item"><span class="digits" id="count-hours">00</span><span class="label">Hours</span>
+            </div>
+            <div class="counter-item"><span class="digits" id="count-mins">00</span><span class="label">Mins</span>
+            </div>
+            <div class="counter-item"><span class="digits" id="count-secs">00</span><span class="label">Secs</span>
+            </div>
+          </div>
+          <p class="counter-since">...and ticking towards forever ❤️</p>
+        </div>
+      </div>
+
+      <!-- Love Coupons Section -->
+      <div class="coupons-section">
+        <h2 class="section-title">Your Love Coupon Book</h2>
+        <p class="section-subtitle-text text-center">Click a coupon to redeem it for a sweet treat! 🎟️💖</p>
+        <div class="coupons-grid">
+          <div class="coupon-card glass-card" id="coupon-1">
+            <div class="coupon-tag">COUPON #01</div>
+            <h3>Anytime Biryani 🍛</h3>
+            <p>Redeem this for a piping hot plate of your favorite Biryani, anytime, anywhere. Double chicken pieces guaranteed!</p>
+            <button class="btn btn-redeem">Redeem Coupon</button>
+            <div class="stamp-overlay">REDEEMED 💖</div>
+          </div>
+          <div class="coupon-card glass-card" id="coupon-2">
+            <div class="coupon-tag">COUPON #02</div>
+            <h3>Anytime Shopping 🛍️</h3>
+            <p>Redeem for a shopping spree. I will hold your bags, give honest fashion advice, and wait patiently forever.</p>
+            <button class="btn btn-redeem">Redeem Coupon</button>
+            <div class="stamp-overlay">REDEEMED 💖</div>
+          </div>
+          <div class="coupon-card glass-card" id="coupon-3">
+            <div class="coupon-tag">COUPON #03</div>
+            <h3>Anytime Movie Date 🍿</h3>
+            <p>You get to choose the movie, and I will buy the snacks and watch it with you without a single complaint.</p>
+            <button class="btn btn-redeem">Redeem Coupon</button>
+            <div class="stamp-overlay">REDEEMED 💖</div>
+          </div>
+          <div class="coupon-card glass-card" id="coupon-4">
+            <div class="coupon-tag">COUPON #04</div>
+            <h3>Every Day Flowers 🌸</h3>
+            <p>A lifetime subscription to fresh flowers. Because you deserve to see beautiful blooms every single day.</p>
+            <button class="btn btn-redeem">Redeem Coupon</button>
+            <div class="stamp-overlay">REDEEMED 💖</div>
+          </div>
+          <div class="coupon-card glass-card" id="coupon-5">
+            <div class="coupon-tag">COUPON #05</div>
+            <h3>Every Weekend Date 🗺️</h3>
+            <p>A standing reservation for a weekend adventure. Cafes, drives, or lazy walks—every single week.</p>
+            <button class="btn btn-redeem">Redeem Coupon</button>
+            <div class="stamp-overlay">REDEEMED 💖</div>
+          </div>
+          <div class="coupon-card glass-card" id="coupon-6">
+            <div class="coupon-tag">COUPON #06</div>
+            <h3>Comfortable Hugs 🧸</h3>
+            <p>Good for the warm, tight hugs that make the rest of the world melt away. Unlimited refills!</p>
+            <button class="btn btn-redeem">Redeem Coupon</button>
+            <div class="stamp-overlay">REDEEMED 💖</div>
+          </div>
+          <div class="coupon-card glass-card" id="coupon-7">
+            <div class="coupon-tag">COUPON #07</div>
+            <h3>Free Win in Any Argument 🏆</h3>
+            <p>Redeem to instantly win any friendly argument or debate. No questions asked, I surrender! 🏳️</p>
+            <button class="btn btn-redeem">Redeem Coupon</button>
+            <div class="stamp-overlay">REDEEMED 💖</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rose Garden Section -->
+      <div class="garden-section">
+        <div class="glass-card garden-card">
+          <h2 class="section-title">Grow Our Love Garden</h2>
+          <p class="garden-instructions text-center">Click the watering can to water our love garden and watch a
+            beautiful rose bloom! 💧🌹</p>
+          <div class="garden-canvas-wrapper">
+            <canvas id="garden-canvas"></canvas>
+            <button id="btn-water" class="btn btn-glow btn-water">Water Garden 💧</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reasons Section -->
+      <div class="reasons-section">
+        <h2 class="section-title">Reasons Why I Love You</h2>
+        <div class="reasons-grid">
+          <div class="reason-card glass-card">
+            <div class="reason-icon">🌸</div>
+            <h3>Your Cute Smile</h3>
+            <p>The way your eyes crinkle when you laugh instantly brightens up my darkest days.</p>
+          </div>
+          <div class="reason-card glass-card">
+            <div class="reason-icon">🧸</div>
+            <h3>Your Kind Heart</h3>
+            <p>You care so deeply about everyone around you. Your warmth makes the world a better place.</p>
+          </div>
+          <div class="reason-card glass-card">
+            <div class="reason-icon">✨</div>
+            <h3>How You Annoy Me</h3>
+            <p>Our playful banter and inside jokes are my favorite moments. I never want them to stop.</p>
+          </div>
+          <div class="reason-card glass-card">
+            <div class="reason-icon">💫</div>
+            <h3>Simply Being You</h3>
+            <p>You don't have to try at all. Just your presence makes everything feel perfect and complete.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cute Photo Gallery Section -->
+      <div class="gallery-section">
+        <h2 class="section-title">Our Dream Gallery</h2>
+        <div class="gallery-grid">
+          <div class="gallery-item glass-card">
+            <div class="gallery-img-wrapper">
+              <img id="gallery-img-1" src="assets/cute_date.png" alt="Cute Date Illustration" loading="lazy">
+            </div>
+            <div class="gallery-caption">Stargazing together ✨</div>
+          </div>
+          <div class="gallery-item glass-card">
+            <div class="gallery-img-wrapper">
+              <img id="gallery-img-2" src="assets/cute_coffee.png" alt="Cute Coffee Illustration" loading="lazy">
+            </div>
+            <div class="gallery-caption">Lazy Sunday coffees ☕</div>
+          </div>
+          <div class="gallery-item glass-card">
+            <div class="gallery-img-wrapper">
+              <img id="gallery-img-3" src="assets/cute_holding_hands.png" alt="Cute Holding Hands Illustration"
+                loading="lazy">
+            </div>
+            <div class="gallery-caption">Hand-in-hand forever 🤝</div>
+          </div>
+        </div>
+
+        <!-- Memory Timeline Section -->
+        <div class="timeline-section">
+          <h2 class="section-title">Our Sweet Journey</h2>
+          <div class="timeline-container">
+
+            <div class="timeline-item left">
+              <div class="timeline-content glass-card">
+                <div class="timeline-date">The Spark ✨</div>
+                <h3>When We First Met</h3>
+                <p>The moment our paths crossed and my heart skipped a beat. I knew right then you were special.</p>
+              </div>
+            </div>
+
+            <div class="timeline-item right">
+              <div class="timeline-content glass-card">
+                <div class="timeline-date">The Comfort ☕</div>
+                <h3>First Late-Night Call</h3>
+                <p>Talking for hours about absolutely everything and nothing, laughing until our stomachs hurt.</p>
+              </div>
+            </div>
+
+            <div class="timeline-item left">
+              <div class="timeline-content glass-card">
+                <div class="timeline-date">The Journey 🗺️</div>
+                <h3>Shared Dreams</h3>
+                <p>Planning our future getaways, secret jokes, and sharing parts of our souls we never showed others.
+                </p>
+              </div>
+            </div>
+
+            <div class="timeline-item right">
+              <div class="timeline-content glass-card">
+                <div class="timeline-date">The Decision 💍</div>
+                <h3>Today</h3>
+                <p>Taking this beautiful step together. The day you said YES to being mine! ❤️</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Final Glowing Card -->
+        <div class="final-glow-container text-center">
+          <div class="glass-card final-glow-card">
+            <h2 class="final-text cursive-text">Forever starts today 💍❤️</h2>
+            <div class="floating-hearts-success">💖✨💖</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- CDN scripts -->
+    <!-- GSAP for smooth animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <!-- GSAP ScrollTrigger for scroll animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <!-- Canvas Confetti for explosion effect -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Custom Script logic -->
+    <script src="script.js?v=romantic_v9"></script>
+</body>
+
+</html>
