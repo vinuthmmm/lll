@@ -381,11 +381,6 @@
         // Register ScrollTrigger entries
         gsap.registerPlugin(ScrollTrigger);
         
-        // Scroll triggers for all sections (binding scroller to the scrollable screen success element)
-        gsap.from('.counter-card', {
-          scrollTrigger: { trigger: '.counter-section', scroller: '#screen-success', start: 'top 85%' },
-          opacity: 0, y: 30, duration: 0.8
-        });
 
         gsap.from('.coupon-card', {
           scrollTrigger: { trigger: '.coupons-section', scroller: '#screen-success', start: 'top 80%' },
@@ -429,29 +424,6 @@
     });
   });
 
-  // --- LIVE ANNIVERSARY COUNTER TIMER ---
-  // Start date: Let's assume they met on October 12, 2025
-  const loveStartDate = new Date("2024-12-28T00:00:00");
-  
-  const updateLoveCounter = () => {
-    const now = new Date();
-    const diffMs = now - loveStartDate;
-    
-    if (diffMs < 0) return; // safety
-    
-    const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const mins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-    const secs = Math.floor((diffMs % (1000 * 60)) / 1000);
-    
-    document.getElementById('count-days').innerText = String(days).padStart(2, '0');
-    document.getElementById('count-hours').innerText = String(hours).padStart(2, '0');
-    document.getElementById('count-mins').innerText = String(mins).padStart(2, '0');
-    document.getElementById('count-secs').innerText = String(secs).padStart(2, '0');
-  };
-  
-  updateLoveCounter();
-  setInterval(updateLoveCounter, 1000);
 
   // --- LOVE COUPON BOOK INTERACTION ---
   document.querySelectorAll('.coupon-card').forEach((card) => {

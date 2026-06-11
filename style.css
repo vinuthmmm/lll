@@ -634,61 +634,6 @@ html, body {
   font-style: italic;
 }
 
-/* Love Story Counter styling */
-.counter-section {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-
-.counter-card {
-  max-width: 650px;
-  width: 100%;
-  padding: 35px 25px;
-}
-
-.love-counter {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 16px;
-  margin: 25px 0;
-}
-
-.counter-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: rgba(255, 255, 255, 0.35);
-  border: 1px solid var(--glass-border);
-  box-shadow: 0 4px 15px rgba(255, 105, 180, 0.08);
-  border-radius: 16px;
-  padding: 12px 18px;
-  min-width: 76px;
-}
-
-.counter-item .digits {
-  font-size: 2.2rem;
-  font-weight: 800;
-  color: var(--dark-pink);
-  text-shadow: 0 0 10px rgba(255, 105, 180, 0.3);
-}
-
-.counter-item .label {
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  color: var(--text-dark);
-  letter-spacing: 0.5px;
-  margin-top: 4px;
-}
-
-.counter-since {
-  font-size: 0.95rem;
-  color: var(--text-muted);
-  font-style: italic;
-}
-
 /* Love Coupons Section styling */
 .coupons-section {
   width: 100%;
