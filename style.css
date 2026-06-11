@@ -699,45 +699,6 @@ html, body {
   transform: translateX(-50%);
 }
 
-/* Reasons Section */
-.reasons-section {
-  width: 100%;
-}
-
-.reasons-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 24px;
-  width: 100%;
-}
-
-.reason-card {
-  padding: 30px 20px;
-  border-radius: 20px;
-  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.reason-card:hover {
-  transform: translateY(-8px) scale(1.02);
-}
-
-.reason-icon {
-  font-size: 2.5rem;
-  margin-bottom: 15px;
-}
-
-.reason-card h3 {
-  font-size: 1.2rem;
-  margin-bottom: 10px;
-  color: var(--dark-pink);
-}
-
-.reason-card p {
-  font-size: 0.95rem;
-  line-height: 1.5;
-  color: var(--text-dark);
-}
-
 /* Photo Gallery Section */
 .gallery-section {
   width: 100%;

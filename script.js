@@ -388,11 +388,6 @@
           opacity: 0, y: 40, duration: 0.9
         });
 
-        gsap.from('.reason-card', {
-          scrollTrigger: { trigger: '.reasons-section', scroller: '#screen-success', start: 'top 80%' },
-          opacity: 0, y: 40, stagger: 0.2, duration: 0.8, ease: "power2.out"
-        });
-
         gsap.from('.gallery-item', {
           scrollTrigger: { trigger: '.gallery-section', scroller: '#screen-success', start: 'top 80%' },
           opacity: 0, scale: 0.9, stagger: 0.2, duration: 0.8, ease: "back.out(1.2)"
