@@ -396,18 +396,9 @@
           opacity: 0, y: 40, duration: 0.9
         });
 
-        gsap.from('.gallery-item', {
-          scrollTrigger: { trigger: '.gallery-section', scroller: '#screen-success', start: 'top 80%' },
-          opacity: 0, scale: 0.9, stagger: 0.2, duration: 0.8, ease: "back.out(1.2)"
-        });
-
-        gsap.from('.timeline-item', {
-          scrollTrigger: { trigger: '.timeline-section', scroller: '#screen-success', start: 'top 80%' },
-          opacity: 0,
-          x: (i, el) => el.classList.contains('left') ? -60 : 60,
-          stagger: 0.25,
-          duration: 1.0,
-          ease: "power3.out"
+        gsap.from('.moment-card', {
+          scrollTrigger: { trigger: '.moments-section', scroller: '#screen-success', start: 'top 80%' },
+          opacity: 0, y: 50, scale: 0.95, stagger: 0.2, duration: 0.9, ease: "back.out(1.2)"
         });
 
         gsap.from('.final-glow-card', {
