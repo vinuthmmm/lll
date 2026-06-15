@@ -336,10 +336,17 @@
       initSynthesizer();
     }
     if (bgMusic) {
-      try {
-        bgMusic.currentTime = 6;
-      } catch (e) {
-        console.log("Error setting audio timestamp:", e);
+      const setTime = () => {
+        try {
+          bgMusic.currentTime = 6;
+        } catch (e) {
+          console.log("Error setting audio timestamp:", e);
+        }
+      };
+      if (bgMusic.readyState >= 1) {
+        setTime();
+      } else {
+        bgMusic.addEventListener('loadedmetadata', setTime, { once: true });
       }
     }
     toggleMusic(true);
