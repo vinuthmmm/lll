@@ -992,24 +992,13 @@ html, body {
     font-size: 1.75rem;
   }
   
-  /* Timeline goes single-column on mobile */
-  .timeline-container::after {
-    left: 20px;
+  .moment-card {
+    padding: 16px;
   }
   
-  .timeline-item {
-    width: 100%;
-    padding-left: 45px;
-    padding-right: 0;
-  }
-  
-  .timeline-item.right {
-    left: 0;
-  }
-  
-  .timeline-item::after {
-    left: 6px !important;
-    right: auto;
+  .moment-compliment {
+    font-size: 1.15rem;
+    line-height: 1.5;
   }
   
   .final-text {
