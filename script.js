@@ -435,6 +435,7 @@
   const gardenCanvas = document.getElementById('garden-canvas');
   const gCtx = gardenCanvas.getContext('2d');
   const btnWater = document.getElementById('btn-water');
+  const gardenStatusEl = document.getElementById('garden-status');
   
   let gWidth = 600;
   let gHeight = 320;
@@ -444,76 +445,119 @@
     stemProgress: 0,
     bloomProgress: 0
   };
-  let roseLeaves = []; // stores leaf node positions
+  
+  // Stems list
+  const flowers = [
+    {
+      id: 'center',
+      hue: 345, // red/crimson rose
+      p0: { x: 300, y: 310 },
+      p1: { x: 280, y: 200 },
+      p2: { x: 320, y: 120 },
+      p3: { x: 300, y: 70 },
+      leaves: [
+        { t: 0.3, side: 'left', angle: -Math.PI / 4, size: 9 },
+        { t: 0.55, side: 'right', angle: Math.PI / 4, size: 11 },
+        { t: 0.75, side: 'left', angle: -Math.PI / 3, size: 11 }
+      ]
+    },
+    {
+      id: 'left',
+      hue: 325, // pink rose
+      p0: { x: 250, y: 310 },
+      p1: { x: 220, y: 210 },
+      p2: { x: 180, y: 150 },
+      p3: { x: 160, y: 110 },
+      leaves: [
+        { t: 0.35, side: 'left', angle: -Math.PI / 3, size: 8 },
+        { t: 0.65, side: 'right', angle: Math.PI / 5, size: 10 }
+      ]
+    },
+    {
+      id: 'right',
+      hue: 45, // golden yellow rose
+      p0: { x: 350, y: 310 },
+      p1: { x: 380, y: 210 },
+      p2: { x: 420, y: 150 },
+      p3: { x: 440, y: 110 },
+      leaves: [
+        { t: 0.35, side: 'right', angle: Math.PI / 3, size: 8 },
+        { t: 0.65, side: 'left', angle: -Math.PI / 5, size: 10 }
+      ]
+    }
+  ];
   
   let waterDroplets = [];
   let roseSparkles = [];
+  let butterflies = [];
+  let wateringCanTimer = 0;
+  
+  const gardenMessages = [
+    "Our love garden is waiting for your care... 🌱",
+    "The seeds are planted, feel the warmth in the air... 🌱",
+    "Look! Tiny green sprouts are starting to appear! 🌿",
+    "The stems are climbing, reaching for the light... 🌿",
+    "Leaves are unfolding, growing beautifully bright! 🍃",
+    "Beautiful flower buds are starting to show... 🌹",
+    "Our roses are opening, watch them gently glow... 🌹",
+    "Almost fully bloomed! One more splash to go... 🌸",
+    "Our love garden has fully bloomed! You make my heart bloom every single day, Nanditha! 🌸💖🌹✨"
+  ];
   
   const initGardenGame = () => {
-    // scale canvas for high DPI retina screens
     const ratio = window.devicePixelRatio || 1;
     gardenCanvas.width = gWidth * ratio;
     gardenCanvas.height = gHeight * ratio;
     gCtx.scale(ratio, ratio);
-    
-    // Setup pre-calculated leaf nodes along the stem
-    roseLeaves = [
-      { t: 0.35, side: 'left', angle: -Math.PI / 4, size: 8 },
-      { t: 0.55, side: 'right', angle: Math.PI / 4, size: 10 },
-      { t: 0.75, side: 'left', angle: -Math.PI / 3, size: 12 }
-    ];
   };
-
-  // Cubic Bezier curve calculator for stem points
-  const p0 = { x: 300, y: 310 }; // base of canvas
-  const p1 = { x: 270, y: 200 };
-  const p2 = { x: 330, y: 120 };
-  const p3 = { x: 300, y: 65 };  // tip where rose blooms
   
-  const getStemPoint = (t) => {
+  const getFlowerStemPoint = (flower, t) => {
     const mt = 1 - t;
     const mt2 = mt * mt;
     const mt3 = mt2 * mt;
     const t2 = t * t;
     const t3 = t2 * t;
     
-    const x = mt3 * p0.x + 3 * mt2 * t * p1.x + 3 * mt * t2 * p2.x + t3 * p3.x;
-    const y = mt3 * p0.y + 3 * mt2 * t * p1.y + 3 * mt * t2 * p2.y + t3 * p3.y;
+    const x = mt3 * flower.p0.x + 3 * mt2 * t * flower.p1.x + 3 * mt * t2 * flower.p2.x + t3 * flower.p3.x;
+    const y = mt3 * flower.p0.y + 3 * mt2 * t * flower.p1.y + 3 * mt * t2 * flower.p2.y + t3 * flower.p3.y;
     
     return { x, y };
   };
-
-  // Water droplets constructor
+  
   class WaterDroplet {
-    constructor() {
-      this.x = 220 + Math.random() * 160;
-      this.y = -10;
-      this.vy = 4 + Math.random() * 3;
+    constructor(startX, startY) {
+      this.x = startX !== undefined ? startX : (200 + Math.random() * 200);
+      this.y = startY !== undefined ? startY : -10;
+      this.vy = 3 + Math.random() * 3;
+      this.vx = startX !== undefined ? (-1.5 + Math.random() * 3.0) : 0;
       this.size = 2 + Math.random() * 3;
     }
     update() {
+      this.x += this.vx;
       this.y += this.vy;
+      this.vy += 0.12; // gravity
     }
     draw() {
       gCtx.save();
-      gCtx.fillStyle = 'rgba(77, 166, 255, 0.7)';
+      gCtx.fillStyle = 'rgba(77, 166, 255, 0.8)';
       gCtx.beginPath();
       gCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
       gCtx.fill();
       gCtx.restore();
     }
   }
-
-  // Rose pollen sparkle constructor
+  
   class RoseSparkle {
     constructor(x, y) {
       this.x = x;
       this.y = y;
-      this.vx = -0.5 + Math.random() * 1.0;
-      this.vy = -0.8 - Math.random() * 1.2;
+      this.vx = -0.6 + Math.random() * 1.2;
+      this.vy = -0.8 - Math.random() * 1.5;
       this.alpha = 1.0;
       this.decay = 0.01 + Math.random() * 0.015;
-      this.size = 2 + Math.random() * 3;
+      this.size = 2 + Math.random() * 4;
+      const colors = ['rgba(255, 215, 0, ', 'rgba(255, 105, 180, ', 'rgba(255, 182, 193, '];
+      this.colorPrefix = colors[Math.floor(Math.random() * colors.length)];
     }
     update() {
       this.x += this.vx;
@@ -523,9 +567,8 @@
     draw() {
       gCtx.save();
       gCtx.globalAlpha = this.alpha;
-      gCtx.fillStyle = `rgba(255, 215, 0, ${this.alpha})`; // gold
+      gCtx.fillStyle = `${this.colorPrefix}${this.alpha})`;
       gCtx.beginPath();
-      // Draw small diamond sparkle
       gCtx.moveTo(this.x, this.y - this.size);
       gCtx.lineTo(this.x + this.size, this.y);
       gCtx.lineTo(this.x, this.y + this.size);
@@ -535,14 +578,65 @@
       gCtx.restore();
     }
   }
-
-  // Draw leaf helper
+  
+  class Butterfly {
+    constructor(x, y) {
+      this.x = x;
+      this.y = y;
+      this.vx = -1.2 + Math.random() * 2.4;
+      this.vy = -0.6 - Math.random() * 1.6;
+      this.scale = 0.6 + Math.random() * 0.5;
+      this.color = `hsl(${330 + Math.random() * 50}, 95%, 75%)`;
+      this.flapSpeed = 0.18 + Math.random() * 0.12;
+      this.flapPhase = Math.random() * Math.PI * 2;
+    }
+    update() {
+      this.x += this.vx;
+      this.y += this.vy;
+      this.flapPhase += this.flapSpeed;
+      
+      this.vx += (Math.random() - 0.5) * 0.22;
+      this.vy += (Math.random() - 0.5) * 0.18;
+      
+      if (this.x < 40 || this.x > gWidth - 40) this.vx *= -1;
+      if (this.y < 30 || this.y > gHeight - 40) this.vy *= -1;
+    }
+    draw() {
+      gCtx.save();
+      gCtx.translate(this.x, this.y);
+      gCtx.scale(this.scale, this.scale);
+      
+      const wingW = Math.abs(Math.sin(this.flapPhase)) * 9;
+      gCtx.fillStyle = this.color;
+      
+      // Left wings
+      gCtx.beginPath();
+      gCtx.ellipse(-wingW/2, -4, wingW/2, 6, -Math.PI/6, 0, Math.PI * 2);
+      gCtx.ellipse(-wingW/2, 3, wingW/2, 4.2, Math.PI/6, 0, Math.PI * 2);
+      gCtx.fill();
+      
+      // Right wings
+      gCtx.beginPath();
+      gCtx.ellipse(wingW/2, -4, wingW/2, 6, Math.PI/6, 0, Math.PI * 2);
+      gCtx.ellipse(wingW/2, 3, wingW/2, 4.2, -Math.PI/6, 0, Math.PI * 2);
+      gCtx.fill();
+      
+      // Body
+      gCtx.fillStyle = '#1e1e1e';
+      gCtx.beginPath();
+      gCtx.ellipse(0, 0, 1.2, 6, 0, 0, Math.PI * 2);
+      gCtx.fill();
+      
+      gCtx.restore();
+    }
+  }
+  
   const drawLeaf = (x, y, angle, size) => {
     gCtx.save();
     gCtx.translate(x, y);
     gCtx.rotate(angle);
-    gCtx.fillStyle = '#4fa16b'; // leaf green
-    gCtx.strokeStyle = '#2f6340';
+    gCtx.fillStyle = '#4fa16b';
+    gCtx.strokeStyle = '#2d603e';
     gCtx.lineWidth = 1;
     gCtx.beginPath();
     gCtx.ellipse(0, 0, size, size/2.2, 0, 0, Math.PI * 2);
@@ -550,104 +644,200 @@
     gCtx.stroke();
     gCtx.restore();
   };
-
-  // Draw layered rose bloom helper
-  const drawRoseBloom = (x, y, progress) => {
-    const maxRadius = 26;
+  
+  const drawRoseBloom = (x, y, progress, hue = 340) => {
+    const maxRadius = 24;
     const r = maxRadius * progress;
+    if (r <= 0) return;
     
     gCtx.save();
+    gCtx.translate(x, y);
     
-    // Draw outer petals
-    gCtx.fillStyle = `rgb(220, 20, 60)`; // crimson
-    gCtx.beginPath();
-    gCtx.arc(x, y, r, 0, Math.PI * 2);
-    gCtx.fill();
+    // Draw outer sepals
+    gCtx.fillStyle = '#4fa16b';
+    for (let i = 0; i < 3; i++) {
+      gCtx.save();
+      gCtx.rotate((i * Math.PI * 2) / 3);
+      gCtx.beginPath();
+      gCtx.ellipse(0, r * 0.4, r * 0.28, r * 0.48, 0, 0, Math.PI * 2);
+      gCtx.fill();
+      gCtx.restore();
+    }
     
-    // Draw layering spiral/petals inside
-    if (progress > 0.3) {
-      gCtx.fillStyle = `rgb(255, 60, 100)`;
+    // Layer 1: Outer Petals
+    gCtx.fillStyle = `hsl(${hue}, 85%, 45%)`;
+    for (let i = 0; i < 5; i++) {
+      gCtx.save();
+      gCtx.rotate((i * Math.PI * 2) / 5);
+      gCtx.beginPath();
+      gCtx.ellipse(0, -r * 0.38, r * 0.58, r * 0.44, 0, 0, Math.PI * 2);
+      gCtx.fill();
+      gCtx.restore();
+    }
+    
+    // Layer 2: Mid Petals
+    if (progress > 0.4) {
+      gCtx.fillStyle = `hsl(${hue}, 95%, 55%)`;
       for (let i = 0; i < 5; i++) {
-        const petalAngle = (i * Math.PI * 2) / 5;
-        const px = x + Math.cos(petalAngle) * (r * 0.45);
-        const py = y + Math.sin(petalAngle) * (r * 0.45);
+        gCtx.save();
+        gCtx.rotate((i * Math.PI * 2) / 5 + 0.55);
         gCtx.beginPath();
-        gCtx.arc(px, py, r * 0.55, 0, Math.PI * 2);
+        gCtx.ellipse(0, -r * 0.24, r * 0.44, r * 0.34, 0, 0, Math.PI * 2);
         gCtx.fill();
+        gCtx.restore();
       }
     }
     
-    if (progress > 0.6) {
-      // Rose inner tight core
-      gCtx.fillStyle = `rgb(255, 105, 135)`;
-      gCtx.beginPath();
-      gCtx.arc(x, y, r * 0.4, 0, Math.PI * 2);
-      gCtx.fill();
+    // Layer 3: Core Petals
+    if (progress > 0.7) {
+      gCtx.fillStyle = `hsl(${hue}, 100%, 65%)`;
+      for (let i = 0; i < 4; i++) {
+        gCtx.save();
+        gCtx.rotate((i * Math.PI * 2) / 4 + 0.3);
+        gCtx.beginPath();
+        gCtx.ellipse(0, -r * 0.12, r * 0.28, r * 0.24, 0, 0, Math.PI * 2);
+        gCtx.fill();
+        gCtx.restore();
+      }
       
-      // Center spiral ring
-      gCtx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
-      gCtx.lineWidth = 2;
+      // Center tight swirl
+      gCtx.strokeStyle = `hsl(${hue}, 100%, 80%)`;
+      gCtx.lineWidth = 1.8;
       gCtx.beginPath();
-      gCtx.arc(x, y, r * 0.2, 0.2, Math.PI * 1.5);
+      gCtx.arc(0, 0, r * 0.11, 0.2, Math.PI * 1.6);
       gCtx.stroke();
     }
     
     gCtx.restore();
   };
-
-  // Render & Animation loop for garden canvas
+  
+  const drawWateringCan = (x, y, tiltAngle) => {
+    gCtx.save();
+    gCtx.translate(x, y);
+    gCtx.rotate(tiltAngle);
+    
+    gCtx.fillStyle = 'rgba(255, 105, 180, 0.85)';
+    gCtx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+    gCtx.lineWidth = 2;
+    
+    // Main body
+    gCtx.beginPath();
+    gCtx.roundRect(-24, -15, 48, 30, 8);
+    gCtx.fill();
+    gCtx.stroke();
+    
+    // Handle on the back
+    gCtx.beginPath();
+    gCtx.arc(-24, 0, 12, -Math.PI/2, Math.PI/2, true);
+    gCtx.stroke();
+    
+    // Spout on the front
+    gCtx.beginPath();
+    gCtx.moveTo(24, 5);
+    gCtx.lineTo(44, -10);
+    gCtx.lineTo(47, -7);
+    gCtx.lineTo(24, 12);
+    gCtx.closePath();
+    gCtx.fill();
+    gCtx.stroke();
+    
+    // Shower head rose on tip
+    gCtx.fillStyle = '#ffb6c1';
+    gCtx.beginPath();
+    gCtx.ellipse(46, -9, 4, 8, -Math.PI/6, 0, Math.PI * 2);
+    gCtx.fill();
+    gCtx.stroke();
+    
+    gCtx.restore();
+  };
+  
   const renderGarden = () => {
     gCtx.clearRect(0, 0, gWidth, gHeight);
     
-    // 1. Draw Ground Soil
+    // 1. Draw Ground Soil bed
     gCtx.save();
-    gCtx.fillStyle = 'rgba(210, 105, 30, 0.15)'; // light brown
+    gCtx.fillStyle = 'rgba(139, 90, 43, 0.35)'; // light brown soil
     gCtx.beginPath();
-    gCtx.ellipse(gWidth/2, 310, 120, 15, 0, 0, Math.PI * 2);
+    gCtx.ellipse(gWidth/2, 310, 200, 20, 0, 0, Math.PI * 2);
+    gCtx.fill();
+    
+    gCtx.fillStyle = '#4fa16b'; // grass patch
+    gCtx.beginPath();
+    gCtx.ellipse(gWidth/2, 307, 190, 12, 0, 0, Math.PI * 2);
     gCtx.fill();
     gCtx.restore();
     
-    // 2. Draw Stem based on stemProgress
-    if (gardenState.stemProgress > 0) {
-      gCtx.save();
-      gCtx.strokeStyle = '#5cb87a'; // stem green
-      gCtx.lineWidth = 4;
-      gCtx.lineCap = 'round';
+    // 2. Draw Grass blades
+    gCtx.save();
+    gCtx.strokeStyle = '#38784d';
+    gCtx.lineWidth = 1.5;
+    for (let i = 0; i < 24; i++) {
+      const gx = gWidth/2 - 170 + i * 15 + (i % 2 === 0 ? 3 : -3);
+      const gy = 308;
       gCtx.beginPath();
-      
-      const pStart = getStemPoint(0);
-      gCtx.moveTo(pStart.x, pStart.y);
-      
-      // Draw segmented path up to stemProgress
-      const segments = Math.floor(gardenState.stemProgress * 100);
-      for (let i = 1; i <= segments; i++) {
-        const pt = getStemPoint(i / 100);
-        gCtx.lineTo(pt.x, pt.y);
-      }
+      gCtx.moveTo(gx, gy);
+      gCtx.quadraticCurveTo(gx - 2, gy - 6, gx - 4, gy - 10);
       gCtx.stroke();
-      gCtx.restore();
-      
-      // 3. Draw Leaves along the stem
-      roseLeaves.forEach((leaf) => {
-        if (gardenState.stemProgress >= leaf.t) {
-          const pt = getStemPoint(leaf.t);
-          drawLeaf(pt.x, pt.y, leaf.angle, leaf.size);
-        }
-      });
     }
+    gCtx.restore();
     
-    // 4. Draw Rose Bloom at the tip
-    if (gardenState.stemProgress >= 0.98 && gardenState.bloomProgress > 0) {
-      const pTip = getStemPoint(1);
-      drawRoseBloom(pTip.x, pTip.y, gardenState.bloomProgress);
+    // 3. Draw All 3 Flowers (stems, leaves, blooms)
+    flowers.forEach((flower) => {
+      if (gardenState.stemProgress > 0) {
+        gCtx.save();
+        gCtx.strokeStyle = '#5cb87a';
+        gCtx.lineWidth = 3.5;
+        gCtx.lineCap = 'round';
+        gCtx.beginPath();
+        
+        const pStart = getFlowerStemPoint(flower, 0);
+        gCtx.moveTo(pStart.x, pStart.y);
+        
+        const segments = Math.floor(gardenState.stemProgress * 100);
+        for (let i = 1; i <= segments; i++) {
+          const pt = getFlowerStemPoint(flower, i / 100);
+          gCtx.lineTo(pt.x, pt.y);
+        }
+        gCtx.stroke();
+        gCtx.restore();
+        
+        flower.leaves.forEach((leaf) => {
+          if (gardenState.stemProgress >= leaf.t) {
+            const pt = getFlowerStemPoint(flower, leaf.t);
+            drawLeaf(pt.x, pt.y, leaf.angle, leaf.size);
+          }
+        });
+      }
       
-      // Spawn golden sparkles continuously from the bloom
-      if (Math.random() < 0.18) {
-        roseSparkles.push(new RoseSparkle(pTip.x - 10 + Math.random() * 20, pTip.y - 10));
+      if (gardenState.stemProgress >= 0.98 && gardenState.bloomProgress > 0) {
+        const pTip = getFlowerStemPoint(flower, 1);
+        drawRoseBloom(pTip.x, pTip.y, gardenState.bloomProgress, flower.hue);
+        
+        if (gardenState.bloomProgress >= 0.95 && Math.random() < 0.08) {
+          roseSparkles.push(new RoseSparkle(pTip.x - 10 + Math.random() * 20, pTip.y - 12));
+        }
+      }
+    });
+    
+    // 4. Draw Animating Watering Can
+    if (wateringCanTimer > 0) {
+      wateringCanTimer--;
+      const startX = 140;
+      const targetX = 220;
+      let currentX = targetX;
+      if (wateringCanTimer > 40) {
+        currentX = startX + (targetX - startX) * ((60 - wateringCanTimer) / 20);
+      }
+      
+      const tilt = Math.PI / 6 * Math.min(1.0, (60 - wateringCanTimer) / 10);
+      drawWateringCan(currentX, 60, tilt);
+      
+      if (Math.random() < 0.65) {
+        waterDroplets.push(new WaterDroplet(currentX + 38, 52));
       }
     }
     
-    // 5. Update & draw water droplets
+    // 5. Update & Draw droplets
     for (let i = waterDroplets.length - 1; i >= 0; i--) {
       waterDroplets[i].update();
       if (waterDroplets[i].y > 310) {
@@ -657,7 +847,7 @@
       }
     }
     
-    // 6. Update & draw sparkles
+    // 6. Update & Draw sparkles
     for (let i = roseSparkles.length - 1; i >= 0; i--) {
       roseSparkles[i].update();
       if (roseSparkles[i].alpha <= 0) {
@@ -667,23 +857,30 @@
       }
     }
     
+    // 7. Update & Draw butterflies
+    for (let i = butterflies.length - 1; i >= 0; i--) {
+      butterflies[i].update();
+      butterflies[i].draw();
+    }
+    
     requestAnimationFrame(renderGarden);
   };
   requestAnimationFrame(renderGarden);
-
-  // Water click handler
+  
   btnWater.addEventListener('click', () => {
     gardenWaterCount++;
-    
-    // Play synthesized water drop sweep sound
+    wateringCanTimer = 60;
     playWaterSound();
     
-    // Spawn 15 falling water droplets
-    for (let i = 0; i < 15; i++) {
-      waterDroplets.push(new WaterDroplet());
+    const messageIndex = Math.min(gardenWaterCount, gardenMessages.length - 1);
+    if (gardenStatusEl) {
+      gardenStatusEl.innerText = `"${gardenMessages[messageIndex]}"`;
+      gsap.fromTo(gardenStatusEl, 
+        { scale: 0.9, opacity: 0.8 }, 
+        { scale: 1.0, opacity: 1.0, duration: 0.3 }
+      );
     }
     
-    // Animate plant growth
     if (gardenState.stemProgress < 1.0) {
       gsap.to(gardenState, {
         stemProgress: Math.min(1.0, gardenState.stemProgress + 0.25),
@@ -695,15 +892,20 @@
         duration: 1.0
       });
     } else {
-      // Garden is fully bloomed! Spawn special colorful sparkle burst
-      const pTip = getStemPoint(1);
-      for (let i = 0; i < 20; i++) {
-        roseSparkles.push(new RoseSparkle(pTip.x, pTip.y));
+      flowers.forEach((flower) => {
+        const pTip = getFlowerStemPoint(flower, 1);
+        for (let i = 0; i < 8; i++) {
+          roseSparkles.push(new RoseSparkle(pTip.x, pTip.y));
+        }
+      });
+      
+      if (butterflies.length < 5) {
+        const centerTip = getFlowerStemPoint(flowers[0], 1);
+        butterflies.push(new Butterfly(centerTip.x, centerTip.y - 10));
       }
     }
   });
 
-  // --- CANVAS PARTICLE SYSTEMS ---
   
   // A. Set canvases size
   const resizeCanvases = () => {
