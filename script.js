@@ -419,6 +419,15 @@
         setTimeout(() => {
           ScrollTrigger.refresh();
         }, 1000);
+
+        // Refresh ScrollTrigger when images load to handle dynamic layout shifts
+        document.querySelectorAll('#screen-success img').forEach(img => {
+          if (img.complete) {
+            ScrollTrigger.refresh();
+          } else {
+            img.addEventListener('load', () => ScrollTrigger.refresh());
+          }
+        });
       }
     });
   });

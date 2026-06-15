@@ -916,7 +916,28 @@ html, body {
   position: relative;
   background-color: inherit;
   width: 50%;
-  opacity: 0; /* Animated by GSAP */
+  opacity: 1; /* Made visible by default to guarantee layout loading */
+}
+
+.timeline-img-wrapper {
+  width: 100%;
+  aspect-ratio: 16/9;
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 15px 0;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+}
+
+.timeline-img-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.timeline-content:hover .timeline-img-wrapper img {
+  transform: scale(1.05);
 }
 
 /* Circles on the timeline */
