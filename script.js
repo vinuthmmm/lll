@@ -337,9 +337,9 @@
     }
     if (bgMusic) {
       try {
-        bgMusic.currentTime = 0;
+        bgMusic.currentTime = 6;
       } catch (e) {
-        console.log("Error resetting audio:", e);
+        console.log("Error setting audio timestamp:", e);
       }
     }
     toggleMusic(true);
