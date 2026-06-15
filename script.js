@@ -381,7 +381,15 @@
         // Register ScrollTrigger entries
         gsap.registerPlugin(ScrollTrigger);
         
+        gsap.from('.poem-card', {
+          scrollTrigger: { trigger: '.poem-card', scroller: '#screen-success', start: 'top 85%' },
+          opacity: 0, y: 45, duration: 1.0, ease: "power3.out"
+        });
 
+        gsap.from('.coupon-card', {
+          scrollTrigger: { trigger: '.coupons-section', scroller: '#screen-success', start: 'top 80%' },
+          opacity: 0, scale: 0.85, stagger: 0.15, duration: 0.8, ease: "back.out(1.2)"
+        });
 
         gsap.from('.garden-card', {
           scrollTrigger: { trigger: '.garden-section', scroller: '#screen-success', start: 'top 80%' },
@@ -1116,5 +1124,31 @@
       }
     });
   };
+
+  // --- LOVE COUPON BOOK INTERACTION ---
+  document.querySelectorAll('.coupon-card').forEach((card) => {
+    const button = card.querySelector('.btn-redeem');
+    if (button) {
+      button.addEventListener('click', () => {
+        if (!card.classList.contains('redeemed')) {
+          card.classList.add('redeemed');
+          
+          // Play synthesized happy bell chime
+          playBellChime();
+          
+          // Trigger small localized confetti burst
+          const cardRect = card.getBoundingClientRect();
+          confetti({
+            particleCount: 20,
+            spread: 70,
+            origin: {
+              x: (cardRect.left + cardRect.width/2) / window.innerWidth,
+              y: (cardRect.top + cardRect.height/2) / window.innerHeight
+            }
+          });
+        }
+      });
+    }
+  });
 
 });
